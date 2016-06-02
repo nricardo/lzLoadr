@@ -1,20 +1,38 @@
+// -- awesome webpack... :)
+var webpack = require('webpack');
+
 // -- import some fs util libs
 var path = require('path');
 
 module.exports = {
 	// entry point
-	entry: 'lzLoadr.js',
+	entry: {
+		lzLoadr: 'lzLoadr',
+		'lzLoadr.min': 'lzLoadr'
+	},
+
+	// define project context (sources)
 	context: path.join(__dirname, 'src'),
 
 	// output definition
 	output: {
-		filename: 'lzLoadr.js',
-		path: path.join(__dirname, 'lib'),
+		filename: '[name].js',
+		path: path.join(__dirname, 'dist'),
 
 		// tell webpack to create a UMD library
 		library: 'lzLoadr',
 		libraryTarget: 'umd'
 	},
+
+	// setup plugins
+	plugins: [
+		new webpack.optimize.UglifyJsPlugin({
+			mangle: false,
+			comments: false,
+			sourceMap: false,
+			include: [ 'lzLoadr.min.js' ]
+		})
+	],
 
 	// loaders definitions
 	module: {
@@ -22,9 +40,8 @@ module.exports = {
 			// transpiles ES6 into vanilla ES5 code
 			{
 				test: /\.jsx?$/,
-				loader: 'babel',
-        query: { stage: 1  },
-				exclude: /node_modules/
+				exclude: /node_modules/,
+				loaders: [ 'ng-annotate', 'babel?stage=1' ]
 			}
 	  ]
 	},
